@@ -3,12 +3,11 @@ var _noCaptchaFields=_noCaptchaFields || [];
 function noCaptchaFieldRender() {
     var submitListener=function(e) {
         e.preventDefault();
-        
-        grecaptcha.execute();
+        var widgetID = e.target.querySelectorAll('.g-recaptcha')[0].getAttribute('data-widgetid');
+        grecaptcha.execute(widgetID);
     };
     
-    for(var i=0;i<_noCaptchaFields.length;i++) {
-        var field=document.getElementById('Nocaptcha-'+_noCaptchaFields[i]);
+    var render = function(field) {
         var options={
             'sitekey': field.getAttribute('data-sitekey'),
             'theme': field.getAttribute('data-theme'),
@@ -26,7 +25,8 @@ function noCaptchaFieldRender() {
                 var formValidator=jQuery(form).data('validator');
                 var superHandler=formValidator.settings.submitHandler;
                 formValidator.settings.submitHandler=function(form) {
-                    grecaptcha.execute();
+                    var widgetID = form.querySelectorAll('.g-recaptcha')[0].getAttribute('data-widgetid');
+                    grecaptcha.execute(widgetID);
                 };
             }else {
                 if(form && form.addEventListener) {
@@ -52,5 +52,9 @@ function noCaptchaFieldRender() {
         
         var widget_id = grecaptcha.render(field, options);
         field.setAttribute("data-widgetid", widget_id);
+    }
+    
+    for(var i=0;i<_noCaptchaFields.length;i++) {
+        render(document.getElementById('Nocaptcha-'+_noCaptchaFields[i]));
     }
 }
